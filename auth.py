@@ -2,7 +2,6 @@ import streamlit as st
 import pyrebase
 
 def initialize_firebase():
-    # Firebase configuration - HARDCODED
     firebaseConfig = {
         "apiKey": "AIzaSyDfC1y3dw-hBnsjm9gxq5CA5nceomzVU2o",
         "authDomain": "workout-62645.firebaseapp.com",
@@ -69,4 +68,4 @@ def login_signup_ui():
             st.session_state["user_email"] = ""
             st.session_state["login_error"] = False
             st.rerun()
-    return True # Indicates that user is logged in and ready to proceed
+    return True 

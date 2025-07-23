@@ -2,11 +2,10 @@ import streamlit as st
 from groq import Groq
 
 def get_groq_client():
-    # Groq API key - HARDCODED
-    api_key = "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" # Replace with your actual Groq API key if you want it to work
-    if not api_key:
-        st.error("Groq API key not found. Please set it in the .env file or hardcode it.") # Adjusted message
-        return None
+    api_key = " place your key here" #The env file was causing issue that is why we are hardcoding the key here 
+    #if not api_key:
+        #st.error("Groq API key not found. Please set it in the .env file or hardcode it.") # Adjusted message
+        #return None
     return Groq(api_key=api_key)
 
 def analyze_routine_with_groq(routine_df):

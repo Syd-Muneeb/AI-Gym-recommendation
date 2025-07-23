@@ -1,14 +1,12 @@
 import streamlit as st
 import pandas as pd
 import datetime
-# Removed: from dotenv import load_dotenv # No longer needed here
 
-# Import functions from your modules
 from auth import login_signup_ui, initialize_firebase
-from dataload import load_data, initialize_model # <--- Changed from src.data_loader to dataload
-from groqAI import analyze_routine_with_groq       # <--- Changed from src.groq_integration to groq
+from dataload import load_data, initialize_model
+from groqAI import analyze_routine_with_groq       
 from workout_logic import recommend_workout, suggest_sets_reps, generate_routine
-# Set page configuration
+
 st.set_page_config(page_title="Gym Workout Planner", layout="wide")
 
 st.markdown("""
@@ -196,31 +194,22 @@ div[data-testid="stCheckbox"] label > div {
 </style>
 """, unsafe_allow_html=True)
 
-
-# Initialize Firebase (auth and db objects)
 auth, db = initialize_firebase()
 
-# Authentication and Login/Signup Flow
 if not login_signup_ui():
-    st.stop() # Stop execution if not logged in
+    st.stop() 
 
-# Title and description
 st.title("🏋‍♂ Gym Workout Planner")
 st.markdown("""
 Welcome to the Gym Workout Planner! Use the *Workout Routine* tab to get a structured workout plan or the *Exercise Library* tab to browse and filter all exercises.
 """)
 
-# Load dataset and initialize models
 df = load_data()
 tfidf, tfidf_matrix, cosine_sim = initialize_model(df)
 
 
-# ========================
-#       MAIN APP TABS
-# ========================
 tab1, tab2, tab3 = st.tabs(["Workout Routine", "Exercise Library", "My Workouts"])
 
-# --- 1. Workout Routine Tab ---
 with tab1:
     st.subheader("Get Your Personalized Workout Routine")
     with st.form("routine_form"):
@@ -246,7 +235,6 @@ with tab1:
 
         submit_routine = st.form_submit_button("Generate Workout Routine")
 
-    # Display saved routine from session_state (if any)
     if 'routine' in st.session_state and 'full_routine_df' in st.session_state:
         st.subheader("Your Workout Routine")
         routine = st.session_state['routine']
@@ -270,7 +258,6 @@ with tab1:
             key=f"download_routine_saved_{st.session_state['user_email']}_{st.session_state.get('split_type', '')}_{st.session_state.get('days_per_week', '')}"
         )
 
-        # --- SAVE BUTTON (after generating routine) ---
         if st.button(
             "Save Workout Routine",
             key=f"save_routine_saved_{st.session_state['user_email']}_{st.session_state.get('split_type','')}_{st.session_state.get('days_per_week','')}"
@@ -286,11 +273,10 @@ with tab1:
             db.child("users").child(user_email_safe).child("workouts").push(save_data)
             st.success("Workout routine saved to your account!")
 
-    # Original routine generation block
+
     if submit_routine:
         recommendations, num_matches = recommend_workout(df, tfidf, tfidf_matrix, goal, muscle, equipment, level, num_recommendations, min_rating, require_description)
 
-        # Save split_type and days_per_week for saving to Firebase later
         st.session_state['split_type'] = split_type
         st.session_state['days_per_week'] = days_per_week
 
@@ -346,7 +332,6 @@ with tab1:
     else:
         st.info("Generate a workout routine first to analyze it.")
 
-# --- 2. Exercise Library Tab ---
 with tab2:
     st.subheader("Browse Exercise Library")
     st.markdown("Filter and search the full exercise library (2,918 exercises).")
@@ -390,7 +375,6 @@ with tab2:
     else:
         st.info("Use the filters above and click 'Apply Filters' to browse exercises.")
 
-# --- 3. My Workouts Tab ---
 with tab3:
     st.subheader("📋 My Saved Workouts")
 
